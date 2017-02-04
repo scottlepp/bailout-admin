@@ -10,6 +10,7 @@ import { appRoutes } from './app.routes';
 import { LoginComponent } from '../login/login';
 import { BondsComponent } from '../reports/bonds';
 import {ToastModule} from 'ng2-toastr/ng2-toastr';
+import { ReportComponent } from '../reports/report';
 
 const firebaseConfig  = {
     apiKey: 'AIzaSyBG9SdyCTKlowUnCN4F47rb8DQtXocf1Ro',
@@ -22,13 +23,14 @@ const firebaseConfig  = {
 const myFirebaseAuthConfig = {
   provider: AuthProviders.Password,
   method: AuthMethods.Password
-}
+};
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    BondsComponent
+    BondsComponent,
+    ReportComponent
   ],
   imports: [
     BrowserModule,

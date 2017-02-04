@@ -1,6 +1,7 @@
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from '../login/login';
 import { BondsComponent } from '../reports/bonds';
+import { ReportComponent } from '../reports/report';
 
 export const appRoutes: Routes = [
   {
@@ -10,6 +11,10 @@ export const appRoutes: Routes = [
   {
     path: 'bonds',
     component: BondsComponent
+  },
+  {
+    path: 'report',
+    component: ReportComponent
   },
   { path: '',
     redirectTo: '/login',
