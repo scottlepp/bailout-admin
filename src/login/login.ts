@@ -17,7 +17,7 @@ export class LoginComponent {
   login() {
     this.af.auth.login({ email: this.email, password: this.pass }).then(result => {
       console.log('logged in');
-      this.router.navigate(['/bonds']);
+      this.router.navigate(['/report']);
     }, error => {
       this.toastr.error(error.message, 'Login Failed');
       console.log(error);

@@ -11,6 +11,7 @@ import { LoginComponent } from '../login/login';
 import { BondsComponent } from '../reports/bonds';
 import {ToastModule} from 'ng2-toastr/ng2-toastr';
 import { ReportComponent } from '../reports/report';
+import { AuthGuard } from './auth-guard.service';
 
 const firebaseConfig  = {
     apiKey: 'AIzaSyBG9SdyCTKlowUnCN4F47rb8DQtXocf1Ro',
@@ -40,7 +41,7 @@ const myFirebaseAuthConfig = {
     RouterModule.forRoot(appRoutes),
     ToastModule
   ],
-  providers: [],
+  providers: [AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

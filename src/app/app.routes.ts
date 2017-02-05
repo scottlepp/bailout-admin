@@ -2,6 +2,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from '../login/login';
 import { BondsComponent } from '../reports/bonds';
 import { ReportComponent } from '../reports/report';
+import { AuthGuard } from './auth-guard.service';
 
 export const appRoutes: Routes = [
   {
@@ -10,14 +11,17 @@ export const appRoutes: Routes = [
   },
   {
     path: 'bonds',
-    component: BondsComponent
+    component: BondsComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'report',
-    component: ReportComponent
+    component: ReportComponent,
+    canActivate: [AuthGuard]
   },
-  { path: '',
-    redirectTo: '/login',
+  {
+    path: '',
+    redirectTo: '/report',
     pathMatch: 'full'
   }
   // { path: 'hero/:id',      component: HeroDetailComponent },
