@@ -3,6 +3,7 @@
     <form class="form-inline">
       <div class="export">
         <button (click)="print()" type="button" class="btn btn-primary">Print</button>
+        <button (click)="add()" type="button" class="btn btn-default">Add New</button>
       </div>
       <div class="filter">
         <label class="sr-only" for="inlineFormInput">Name</label>
@@ -52,7 +53,7 @@
       <th>Time</th>
     </thead>
     <tbody>
-      <tr *ngFor="let bond of bonds" (click)="edit(bond)">
+      <tr *ngFor="let bond of bonds | async" (click)="edit(bond)">
         <td>{{bond.power}}</td>
         <td>{{bond.dateCreated | date:'shortDate'}}</td>
         <td>{{bond.amount | currency:'USD':true:'1.0-2'}} </td>

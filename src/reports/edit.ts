@@ -11,17 +11,17 @@ import { ModalComponent } from './modal';
 })
 export class EditComponent implements OnInit {
 
+  action = 'Edit';
   bond = {};
-  columns = [];
-
+  date;
+  dateTime;
+  time;
   today = new Date();
   startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
   endDate = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 0);
-
-  totalLiability = 0;
-  totalNet = 0;
-  totalGross = 0;
-  totalBuf = 0;
+  editing = true;
+  key;
+  timeChange = false;
 
   @ViewChild(ModalComponent)
   public readonly modal: ModalComponent;
@@ -39,13 +39,44 @@ export class EditComponent implements OnInit {
     this.modal.visible = false;
   }
 
-  public show(bond) {
+  public show(bond, edit) {
+    this.editing = edit;
+    this.action = this.editing ? 'Edit':'Add';
     this.bond = bond;
+    this.date = new Date(bond.dateCreated);
+    this.dateTime = new Date(bond.dateCreated);
+    this.time = this.date.toTimeString().split(' ')[0];
     this.modal.show();
+  }
+
+  ok() {
+    // console.log(this.bond);
+    // console.log(this.date);
+    // console.log(this.dateTime);
+    if (this.timeChange) {
+      this.dateTime.setHours(this.dateTime.getHours() + 5);
+    }
+    this.timeChange = false;
+    let bondDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), this.dateTime.getHours(), this.dateTime.getMinutes(), this.dateTime.getSeconds());
+    // console.log(bondDate);
+    this.bond['dateCreated'] = bondDate.getTime();
+    this.saveBond(this.bond);
+  }
+
+  delete() {
+    let bonds = this.af.database.list('/bonds');
+    let key = this.bond['$key'];
+    if(key !== undefined) {
+      bonds.remove(key).then(_ => this.modal.hide());
+    }
   }
 
   cancel() {
     this.modal.hide();
+  }
+
+  timeChanged() {
+    this.timeChange = true;
   }
 
   parseDate(dateString: string): Date {
@@ -61,16 +92,22 @@ export class EditComponent implements OnInit {
     return d.toString() === 'Invalid Date' ? false : true;
   }
 
-  private sort(array, field) {
-    array.sort((a, b) => {
-      if (a[field] > b[field]) {
-        return 1;
-      }
-      if (a[field] < b[field]) {
-          return -1;
-      }
-      return 0;
-    });
+  private saveBond(bond) {
+    let bonds = this.af.database.list('/bonds');
+
+    if (this.editing) {
+      this.key = bond['$key'];
+      delete bond['$key'];
+      delete bond['$exists'];
+      bonds.update(this.key, bond).then(() => {
+        this.modal.hide();
+      });
+    } else {
+      bond['status'] = 'open';
+      bonds.push(bond).then(() => {
+        this.modal.hide();
+      });
+    }
   }
 
   private cleanPhone(bond) {
@@ -79,27 +116,6 @@ export class EditComponent implements OnInit {
     }
     if (bond.indPhone !== undefined) {
       bond.indPhone = bond.indPhone.replace(/_/g, '');
-    }
-  }
-
-  private cleanLegacyName(bond, name, type) {
-    if (name.indexOf(',') > -1) {
-      let names = name.split(',');
-      bond[type + 'Last'] = names[0].trim();
-      names = names[1].trim().split(' ');
-      bond[type + 'First'] = names[0];
-      if (names.length > 1) {
-        bond[type + 'Middle'] = names[1];
-      }
-    } else {
-      let names = name.split(' ');
-      bond[type + 'First'] = names[0];
-      if (names.length > 2) {
-        bond[type + 'Middle'] = names[1];
-        bond[type + 'Last'] = names[2];
-      } else {
-        bond[type + 'Last'] = names[1];
-      }
     }
   }
 

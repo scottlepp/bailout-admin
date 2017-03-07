@@ -44,24 +44,40 @@ export class ReportComponent implements OnInit {
   print() {
     window.print();
   }
-  
+
+  add() {
+    let bond = {dateCreated: new Date().getTime()};
+    this.editComponent.show(bond, false);
+  }
   edit(bond) {
-    this.editComponent.show(bond);
+    this.editComponent.show(bond, true);
   }
 
   queryBonds() {
-    let bonds = this.af.database.list('/bonds', {
+    this.bonds = this.af.database.list('/bonds', {
       query: {
         orderByChild: 'dateCreated',
         startAt: this.start,
         endAt: this.end
       }
-    });
-    bonds.subscribe(list => {
-      this.bonds = list;
+    })
+    .map(list => {
+      // this.bonds = list;
       let totalLiability = 0, totalNet = 0, totalBuf = 0, totalGross = 0;
-      for (let bond of this.bonds) {
 
+      // after an update it adds the item here until a full refresh
+      list = list.filter(item => {
+        return item.$key !== undefined;
+      });
+
+      for (let bond of list) {
+
+        if (bond.power) {
+          bond.power = bond.power.toUpperCase();
+          if (bond.power.indexOf('-') === -1) {
+            bond.power = bond.power.slice(0,4) + '-' + bond.power.slice(4);
+          }
+        }
         totalLiability += parseFloat(bond.amount);
 
         bond.gross = bond.amount * 0.1;
@@ -92,13 +108,14 @@ export class ReportComponent implements OnInit {
         this.cleanPhone(bond);
       }
 
-      this.sort(this.bonds, 'power');
+      this.sort(list, 'power');
 
       this.totalBuf = totalBuf;
       this.totalLiability = totalLiability;
       this.totalGross = totalGross;
       this.totalNet = totalNet;
 
+      return list;
     });
   }
 
