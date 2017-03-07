@@ -1,0 +1,14 @@
+h1 {
+  font-size: 26px;
+  float: left;
+}
+
+label {
+  padding-top: 5px;
+}
+
+.btn-danger {
+  float: right;
+  margin-top: -5px;
+  margin-right: 15px;
+}

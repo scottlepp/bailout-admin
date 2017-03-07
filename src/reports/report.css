@@ -68,3 +68,18 @@ ul {
     padding-top: 10px;
   }
 }
+
+tr:hover .edit {
+  display: inline;
+}
+
+tr:hover {
+  cursor: pointer;
+}
+
+.edit {
+  float: right;
+  padding-top: 3px;
+  cursor: pointer;
+  display: none;
+}

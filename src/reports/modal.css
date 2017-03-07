@@ -1,0 +1,20 @@
+.modal {
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-header {
+  padding-top: 25px;
+  padding-left: 25px;
+}
+
+.modal-content {
+  border-radius: inherit;
+}
+
+/*.modal-body {
+  background-color: #ecf0f1;
+}
+
+.modal-footer {
+  background-color: #d2d6d7;
+}*/

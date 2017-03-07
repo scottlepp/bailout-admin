@@ -52,7 +52,7 @@
       <th>Time</th>
     </thead>
     <tbody>
-      <tr *ngFor="let bond of bonds">
+      <tr *ngFor="let bond of bonds" (click)="edit(bond)">
         <td>{{bond.power}}</td>
         <td>{{bond.dateCreated | date:'shortDate'}}</td>
         <td>{{bond.amount | currency:'USD':true:'1.0-2'}} </td>
@@ -63,9 +63,11 @@
         <td>{{bond.user}}</td>
         <td>{{bond.county}}</td>
         <td>{{bond.source}}</td>
-        <td>{{bond.dateCreated | date:'shortTime'}}</td>
+        <td>{{bond.dateCreated | date:'shortTime'}}
+          <span class="fa fa-pencil edit" (click)="edit(bond)"></span>
+        </td>
       </tr>
     </tbody>
   </table>
-
+  <app-edit></app-edit>
 </main>
