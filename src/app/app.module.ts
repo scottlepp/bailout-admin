@@ -14,6 +14,7 @@ import { ReportComponent } from '../reports/report';
 import { AuthGuard } from './auth-guard.service';
 import { EditComponent } from '../reports/edit';
 import { ModalComponent } from '../reports/modal';
+import { NgDateRangePickerModule } from 'ng-daterangepicker';
 
 const firebaseConfig  = {
     apiKey: 'AIzaSyBG9SdyCTKlowUnCN4F47rb8DQtXocf1Ro',
@@ -43,7 +44,8 @@ const myFirebaseAuthConfig = {
     HttpModule,
     AngularFireModule.initializeApp(firebaseConfig , myFirebaseAuthConfig),
     RouterModule.forRoot(appRoutes),
-    ToastModule.forRoot()
+    ToastModule.forRoot(),
+    NgDateRangePickerModule
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent]

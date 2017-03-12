@@ -12,3 +12,8 @@ label {
   margin-top: -5px;
   margin-right: 15px;
 }
+
+.va-modal-body {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}

@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AngularFire } from 'angularfire2';
 import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { EditComponent } from './edit';
+import { NgDateRangePickerOptions } from 'ng-daterangepicker';
 
 @Component({
   selector: 'app-report',
@@ -18,24 +19,50 @@ export class ReportComponent implements OnInit {
   columns = [];
 
   today = new Date();
-  startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
+  startDate: Date = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
   endDate = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 0);
+
+  options: NgDateRangePickerOptions;
+  // '01/03/2017-31/03/2017'
+  dateRange;
 
   totalLiability = 0;
   totalNet = 0;
   totalGross = 0;
   totalBuf = 0;
 
-  private start = new BehaviorSubject<number>(this.startDate.getTime());
-  private end = new BehaviorSubject<number>(this.endDate.getTime());
+  private start;
+  private end;
 
   constructor(private af: AngularFire) {}
 
   ngOnInit() {
+    this.startDate.setHours(0, 0, 0, 0);
+    this.endDate.setHours(23, 59, 59, 999);
+
+    this.start = new BehaviorSubject<number>(this.startDate.getTime());
+    this.end = new BehaviorSubject<number>(this.endDate.getTime());
+
+    this.options = {theme: 'default', range: 'tm'};
     this.queryBonds();
   }
 
   filterResults() {
+    // console.log(this.dateRange);
+    if (this.dateRange !== undefined) {
+      const dates = this.dateRange.split('-');
+      const start = dates[0];
+      const end = dates[1];
+      const startDayMonthYear = start.split('/');
+      const endDayMonthYear = end.split('/');
+      const isoStartDate = startDayMonthYear[2] + '-' + startDayMonthYear[1] + '-' + startDayMonthYear[0];
+      const isoEndDate = endDayMonthYear[2] + '-' + endDayMonthYear[1] + '-' + endDayMonthYear[0];
+      // 5 is UTC timezone offset
+      this.startDate = new Date(isoStartDate + 'T00:00-05:00');
+      // this.startDate.setHours(0, 0, 0, 0);
+      this.endDate = new Date(isoEndDate + 'T23:59-05:00');
+      // this.endDate.setHours(23, 59, 59, 999);
+    }
     this.start.next(this.startDate.getTime());
     this.end.next(this.endDate.getTime());
     // this.queryBonds();

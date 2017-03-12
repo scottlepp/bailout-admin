@@ -7,8 +7,9 @@
       </div>
       <div class="filter">
         <label class="sr-only" for="inlineFormInput">Name</label>
-        <input [value]="startDate | date:'yyyy-MM-dd'" (input)="startDate=parseDate($event.target.value)" type="date" class="form-control" id="inlineFormInput" placeholder="Start Date" name="start-date">
-        <input [value]="endDate | date:'yyyy-MM-dd'" (input)="endDate=parseDate($event.target.value)" type="date" class="form-control" id="inlineFormInput" placeholder="End Date" name="end-date">
+        <ng-daterangepicker [(ngModel)]="dateRange" [options]="options" name="date"></ng-daterangepicker>
+        <!--<input [value]="startDate | date:'yyyy-MM-dd'" (input)="startDate=parseDate($event.target.value)" type="date" class="form-control" id="inlineFormInput" placeholder="Start Date" name="start-date">
+        <input [value]="endDate | date:'yyyy-MM-dd'" (input)="endDate=parseDate($event.target.value)" type="date" class="form-control" id="inlineFormInput" placeholder="End Date" name="end-date">-->
         <button (click)="filterResults()" type="button" class="btn btn-default">Filter</button>
       </div>
     </form>

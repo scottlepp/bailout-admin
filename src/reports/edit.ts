@@ -41,7 +41,7 @@ export class EditComponent implements OnInit {
 
   public show(bond, edit) {
     this.editing = edit;
-    this.action = this.editing ? 'Edit':'Add';
+    this.action = this.editing ? 'Edit' : 'Add';
     this.bond = bond;
     this.date = new Date(bond.dateCreated);
     this.dateTime = new Date(bond.dateCreated);
@@ -80,11 +80,13 @@ export class EditComponent implements OnInit {
   }
 
   parseDate(dateString: string): Date {
-      if (dateString) {
-          return new Date(dateString);
-      } else {
-          return null;
-      }
+    if (dateString) {
+      // add time zone offset
+      const localDate = dateString + 'T00:00-05:00';
+      return new Date(localDate);
+    } else {
+      return null;
+    }
   }
 
   isDate(dateVal) {
