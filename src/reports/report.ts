@@ -176,6 +176,9 @@ export class ReportComponent implements OnInit {
     if (bond.buf < 5) {
       bond.buf = 5;
     }
+    if (bond.status === 'rewrite') {
+      bond.buf = 0;
+    }
     this.totals.buf += bond.buf;
   }
 
