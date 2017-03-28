@@ -21,19 +21,19 @@
       <ul class="list-inline">
         <li class="list-inline-item">
           <h6>Liability: </h6>
-          <h6>{{totalLiability | currency:'USD':true:'1.0-2'}}</h6>
+          <h6>{{totals.liability | currency:'USD':true:'1.0-2'}}</h6>
         </li>
         <li class="list-inline-item">
           <h6>Net Amount: </h6>
-          <h6>{{totalNet | currency:'USD':true:'1.2-2'}}</h6>
+          <h6>{{totals.net | currency:'USD':true:'1.2-2'}}</h6>
         </li>
         <li class="list-inline-item">
           <h6>Gross Amount: </h6>
-          <h6>{{totalGross | currency:'USD':true:'1.2-2'}}</h6>
+          <h6>{{totals.gross | currency:'USD':true:'1.2-2'}}</h6>
         </li>
         <li class="list-inline-item">
           <h6>BUF Amount: </h6>
-          <h6>{{totalBuf | currency:'USD':true:'1.2-2'}}</h6>
+          <h6>{{totals.buf | currency:'USD':true:'1.2-2'}}</h6>
         </li>
       </ul>
     </div>
@@ -48,13 +48,27 @@
       <th>Net</th>
       <th>BUF</th>
       <th>Defendant Name</th>
-      <th>Agent</th>
+      <th>Agent <span class="fa fa-filter" (click)="showFilter('user')"></span></th>
       <th>County</th>
       <th>Source</th>
       <th>Time</th>
     </thead>
     <tbody>
-      <tr *ngFor="let bond of bonds | async" (click)="edit(bond)">
+      <tr [hidden]="!filters.show">
+        <td><input type="text" [hidden]="true"></td>
+        <td><input type="text" [hidden]="true"></td>
+        <td><input type="text" [hidden]="true"></td>
+        <td><input type="text" [hidden]="true"></td>
+        <td><input type="text" [hidden]="true"></td>
+        <td><input type="text" [hidden]="true"></td>
+        <td><input type="text" [hidden]="true"></td>
+        <td><input type="text" [hidden]="!filters['user']" (keydown)="filterColumn('user', $event)"></td>
+        <td><input type="text" [hidden]="true"></td>
+        <td><input type="text" [hidden]="true"></td>
+        <td>
+        </td>
+      </tr>
+      <tr *ngFor="let bond of bonds" (click)="edit(bond)">
         <td>{{bond.power}}</td>
         <td>{{bond.dateCreated | date:'shortDate'}}</td>
         <td>{{bond.amount | currency:'USD':true:'1.0-2'}} </td>

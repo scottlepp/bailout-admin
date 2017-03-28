@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AngularFire } from 'angularfire2';
+import { AngularFire, FirebaseListObservable } from 'angularfire2';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { EditComponent } from './edit';
@@ -16,6 +16,7 @@ export class ReportComponent implements OnInit {
   public readonly editComponent: EditComponent;
 
   bonds;
+  allBonds;
   columns = [];
   users = {};
   today = new Date();
@@ -26,10 +27,9 @@ export class ReportComponent implements OnInit {
   // '01/03/2017-31/03/2017'
   dateRange;
 
-  totalLiability = 0;
-  totalNet = 0;
-  totalGross = 0;
-  totalBuf = 0;
+  totals = {liability: 0, net: 0, gross: 0, buf: 0};
+  filters = {show: false};
+  timeout;
 
   private start;
   private end;
@@ -87,18 +87,40 @@ export class ReportComponent implements OnInit {
     this.editComponent.show(bond, true);
   }
 
+  showFilter(filter) {
+    this.filters[filter] = !this.filters[filter];
+    this.filters.show = this.filters[filter];
+  }
+
+  filterColumn(field, $event) {
+    window.clearTimeout(this.timeout);
+    this.timeout = window.setTimeout(_ => {
+      const val = $event.target.value;
+      if (val === '') {
+        this.bonds = this.allBonds;
+      } else {
+        this.bonds = this.bonds.filter(item => {
+          return item[field].toLowerCase().startsWith(val.toLowerCase());
+        });
+      }
+      this.totals = {liability: 0, net: 0, gross: 0, buf: 0};
+      for (const bond of this.bonds) {
+        this.calculate(bond);
+      }
+    }, 100);
+  }
+
   queryBonds() {
-    this.bonds = this.af.database.list('/bonds', {
+    this.af.database.list('/bonds', {
       query: {
         orderByChild: 'dateCreated',
         startAt: this.start,
         endAt: this.end
       }
     })
-    .map(list => {
+    .subscribe(list => {
       // this.bonds = list;
-      let totalLiability = 0, totalNet = 0, totalBuf = 0, totalGross = 0;
-
+      this.totals = {liability: 0, net: 0, gross: 0, buf: 0};
       // after an update it adds the item here until a full refresh
       list = list.filter(item => {
         return item.$key !== undefined;
@@ -112,22 +134,8 @@ export class ReportComponent implements OnInit {
             bond.power = bond.power.slice(0,4) + '-' + bond.power.slice(4);
           }
         }
-        totalLiability += parseFloat(bond.amount);
 
-        bond.gross = bond.amount * 0.1;
-        totalGross += bond.gross;
-
-        bond.net = bond.amount * 0.01;
-        if (bond.net < 10) {
-          bond.net = 10;
-        }
-        totalNet += bond.net;
-
-        bond.buf = bond.amount * 0.005;
-        if (bond.buf < 5) {
-          bond.buf = 5;
-        }
-        totalBuf += bond.buf;
+        this.calculate(bond);
 
         if (bond.defendant) {
           let fullName = this.toTitleCase(bond.defendant);
@@ -146,13 +154,29 @@ export class ReportComponent implements OnInit {
 
       this.sort(list, 'power');
 
-      this.totalBuf = totalBuf;
-      this.totalLiability = totalLiability;
-      this.totalGross = totalGross;
-      this.totalNet = totalNet;
-
-      return list;
+      // return list;
+      this.bonds = list;
+      this.allBonds = list;
     });
+  }
+
+  calculate(bond) {
+    this.totals.liability += parseFloat(bond.amount);
+
+    bond.gross = bond.amount * 0.1;
+    this.totals.gross += bond.gross;
+
+    bond.net = bond.amount * 0.01;
+    if (bond.net < 10) {
+      bond.net = 10;
+    }
+    this.totals.net += bond.net;
+
+    bond.buf = bond.amount * 0.005;
+    if (bond.buf < 5) {
+      bond.buf = 5;
+    }
+    this.totals.buf += bond.buf;
   }
 
   parseDate(dateString: string): Date {

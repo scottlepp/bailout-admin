@@ -92,3 +92,18 @@ tr:hover {
   cursor: pointer;
   display: none;
 }
+
+tr input {
+    width: 100%;
+}
+
+.fa-filter {
+  display: none;
+  cursor: pointer;
+  float: right;
+  padding-top: 3px;
+}
+
+th:hover .fa-filter{
+  display: inline-block;
+}
