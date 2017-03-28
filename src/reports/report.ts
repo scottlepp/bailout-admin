@@ -17,7 +17,7 @@ export class ReportComponent implements OnInit {
 
   bonds;
   columns = [];
-
+  users = {};
   today = new Date();
   startDate: Date = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
   endDate = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 0);
@@ -37,14 +37,21 @@ export class ReportComponent implements OnInit {
   constructor(private af: AngularFire) {}
 
   ngOnInit() {
-    this.startDate.setHours(0, 0, 0, 0);
-    this.endDate.setHours(23, 59, 59, 999);
-
-    this.start = new BehaviorSubject<number>(this.startDate.getTime());
-    this.end = new BehaviorSubject<number>(this.endDate.getTime());
-
     this.options = {theme: 'default', range: 'tm'};
-    this.queryBonds();
+    const users = this.af.database.list('/users');
+    users.subscribe(list => {
+      for (const item of list) {
+        this.users[item.$value] = item.$key;
+      }
+
+      this.startDate.setHours(0, 0, 0, 0);
+      this.endDate.setHours(23, 59, 59, 999);
+
+      this.start = new BehaviorSubject<number>(this.startDate.getTime());
+      this.end = new BehaviorSubject<number>(this.endDate.getTime());
+
+      this.queryBonds();
+    });
   }
 
   filterResults() {
@@ -133,6 +140,8 @@ export class ReportComponent implements OnInit {
         }
 
         this.cleanPhone(bond);
+
+        bond.userName = this.users[bond.user.toLowerCase()];
       }
 
       this.sort(list, 'power');
